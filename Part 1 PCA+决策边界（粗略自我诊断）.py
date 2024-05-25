@@ -1,7 +1,6 @@
 import pandas as pd
 # made by 许博文
 # 1. 数据预处理
-
 # 加载数据
 data_path = 'heart_statlog_cleveland_hungary_final.csv'
 data = pd.read_csv(data_path)
@@ -69,14 +68,14 @@ def biplot(score, coeff, labels=None):
     scaley = 1.0 / (ys.max() - ys.min())
     
     plt.figure(figsize=(8, 8))
-    plt.scatter(xs * scalex, ys * scaley, c=y_train)  
+    plt.scatter(xs * scalex, ys * scaley,  c=['blue' if label == 0 else 'skyblue' for label in y_train])  
     for i in range(len(coeff)):
         x, y = coeff[i, 0], coeff[i, 1]
-        plt.arrow(0, 0, x, y, color='r', alpha=0.5)
+        plt.arrow(0, 0, x, y, color='black', alpha=1)
         if labels is None:
-            plt.text(x * 1.15, y * 1.15, "Var"+str(i+1), color='g', ha='center', va='center')
+            plt.text(x * 1.15, y * 1.15, "Var"+str(i+1), color='black', ha='center', va='center', fontsize=15)
         else:
-            plt.text(x * 1.15, y * 1.15, labels[i], color='g', ha='center', va='center')
+            plt.text(x * 1.15, y * 1.15, labels[i], color='black', ha='center', va='center', fontsize=15)
     
     plt.xlabel("PC{}".format(1))
     plt.ylabel("PC{}".format(2))
@@ -111,8 +110,8 @@ def plot_decision_boundary(X, y, model):
     plt.contourf(xx, yy, preds, alpha=0.3, levels=[0, 0.5, 1], cmap='RdBu')
     plt.contour(xx, yy, preds, levels=[0.5], colors='purple')
 
-    plt.scatter(X[y == 0, 0], X[y == 0, 1], c='blue', marker='o', edgecolors='k', label='No Heart Disease')
-    plt.scatter(X[y == 1, 0], X[y == 1, 1], c='red', marker='x', label='Heart Disease')
+    plt.scatter(X[y == 0, 0], X[y == 0, 1], c='#DA70D6', marker='o', edgecolors='k', label='No Heart Disease')
+    plt.scatter(X[y == 1, 0], X[y == 1, 1], c='#0000CD', marker='x', label='Heart Disease')
 
     plt.xlabel('Principal Component 1')
     plt.ylabel('Principal Component 2')

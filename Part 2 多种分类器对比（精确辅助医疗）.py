@@ -22,7 +22,7 @@ import seaborn as sns
 df_dummies = pd.get_dummies(data) 
 correlation_matrix = df_dummies.corr()
 plt.figure(figsize=(10, 8))
-sns.heatmap(correlation_matrix, annot=True, cmap='BuGn', fmt=".1f")
+sns.heatmap(correlation_matrix, annot=True, cmap='vlag', fmt=".1f")
 plt.title('Heatmap of Correlation Matrix', weight='bold', size=6)
 plt.show()
 
