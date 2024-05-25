@@ -1,5 +1,6 @@
 import pandas as pd
-# made by 许博文
+# made by bowen xu
+
 # 1. 数据预处理
 # 加载数据
 data_path = 'heart_statlog_cleveland_hungary_final.csv'
