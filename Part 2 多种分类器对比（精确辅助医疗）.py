@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 
-# mady by 许博文
+# mady by bowen xu
 
 # 1. 数据预处理
 # 加载数据
