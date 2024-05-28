@@ -19,6 +19,7 @@ categorical_features = ['sex', 'chest pain type', 'fasting blood sugar', 'restin
 for col in categorical_features:
     data[col] = le.fit_transform(data[col])
 
+
 # 划分数据集
 train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
 
@@ -37,7 +38,7 @@ X_test_scaled = scaler.transform(test_data)
 
 # 2. PCA
 # 应用PCA
-pca = PCA(n_components=2) # 只保留前两个主成分
+pca = PCA(n_components=11) # 只保留前两个主成分
 X_train_pca = pca.fit_transform(X_train_scaled)
 X_test_pca = pca.transform(X_test_scaled)
 

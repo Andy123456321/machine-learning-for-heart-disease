@@ -4,6 +4,9 @@ import numpy as np
 
 # mady by bowen xu
 
+# 固定随机种子
+np.random.seed(42)
+
 # 1. 数据预处理
 # 加载数据
 data_path = 'heart_statlog_cleveland_hungary_final.csv'
@@ -31,7 +34,8 @@ categorical_features = ['sex', 'chest pain type', 'fasting blood sugar', 'restin
 for col in categorical_features:
     data[col] = le.fit_transform(data[col])
 
-
+data = pd.get_dummies(data, columns=categorical_features)
+data1 = data.copy()
 
 # 划分数据集
 train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
@@ -198,14 +202,46 @@ plt.savefig('roc_curves_comparison.png', dpi=300, bbox_inches='tight')
 plt.show()
 
 # 5. 模型选择与变量选择变量选择
-from sklearn.feature_selection import SelectKBest
-from sklearn.feature_selection import chi2
-from sklearn.feature_selection import SelectKBest, f_classif
+# 固定随机种子
+np.random.seed(42)
 
-# 选择最佳特征
-selector = SelectKBest(f_classif, k=5)
-X_train_scaled = selector.fit_transform(X_train_scaled, y_train)
-X_test_scaled = selector.transform(X_test_scaled)
+# 1. 数据预处理
+# 加载数据
+data_path = 'heart_statlog_cleveland_hungary_final.csv'
+data = pd.read_csv(data_path)
+# 删除sex列
+data = data.drop(data['sex'])
+
+from sklearn.preprocessing import LabelEncoder
+from sklearn.decomposition import PCA
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# 初始化标签编码器
+le = LabelEncoder()
+
+# 对分类变量进行标签编码
+categorical_features = ['chest pain type', 'fasting blood sugar', 'resting ecg', 'exercise angina', 'ST slope']
+for col in categorical_features:
+    data[col] = le.fit_transform(data[col])
+
+data = pd.get_dummies(data, columns=categorical_features)
+
+# 划分数据集
+train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
+
+# 提取标签
+y_train = train_data['target'].values
+y_test = test_data['target'].values
+
+# 移除不必要的列
+train_data = train_data.drop(columns=['target'])
+test_data = test_data.drop(columns=['target'])
+
+# 标准化特征
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(train_data)
+X_test_scaled = scaler.transform(test_data)
 
 # 重新计算模型
 # 5.1. 逻辑回归
@@ -224,7 +260,7 @@ p1 = model_1.predict(X_test_scaled)
 
 # 解释每个自变量在logistic回归模型中对因变量的影响，即相关系数
 # 假设特征名称存储在 feature_names 列表中
-feature_names = ['age','sex','chest pain type','resting bp s','cholesterol','fasting blood sugar','resting ecg','max heart rate','exercise angina','oldpeak','ST slope']  # 替换为实际的特征名称
+feature_names = ['age','chest pain type','resting bp s','cholesterol','fasting blood sugar','resting ecg','max heart rate','exercise angina','oldpeak','ST slope']  # 替换为实际的特征名称
 
 # 将系数与特征名称结合起来
 coefficients = model_1.coef_[0]  # 如果是二分类模型，model_1.coef_ 是一个二维数组，取第一个数组
