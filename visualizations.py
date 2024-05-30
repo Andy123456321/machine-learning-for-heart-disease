@@ -4,6 +4,10 @@ import pandas as pd
 
 file_path = 'D:\code\RUClearn\shukegaiproject\skg new_version\新数科概（修改配色版）\heart_statlog_cleveland_hungary_final.csv'
 data = pd.read_csv(file_path)
+data['cholesterol'] = data['cholesterol'].replace(0, np.nan)
+cholesterol_median = data['cholesterol'].median()
+data['cholesterol'] = data['cholesterol'].fillna(cholesterol_median)
+
 
 sns.set(style='whitegrid')
 
