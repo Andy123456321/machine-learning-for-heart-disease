@@ -11,6 +11,10 @@ np.random.seed(42)
 # 加载数据
 data_path = 'heart_statlog_cleveland_hungary_final.csv'
 data = pd.read_csv(data_path)
+data['cholesterol'] = data['cholesterol'].replace(0, np.nan)
+cholesterol_median = data['cholesterol'].median()
+data['cholesterol'] = data['cholesterol'].fillna(cholesterol_median)
+
 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.decomposition import PCA
