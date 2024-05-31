@@ -61,6 +61,7 @@ plt.ylabel('Explained variance ratio')
 plt.xlabel('Principal component index')
 plt.title('Scree Plot')
 plt.legend(loc='best')
+plt.xticks(range(1, len(variance_explained) + 1))
 plt.tight_layout()
 plt.show()
 
