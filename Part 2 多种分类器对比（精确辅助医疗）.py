@@ -11,23 +11,27 @@ np.random.seed(42)
 # 加载数据
 data_path = 'heart_statlog_cleveland_hungary_final.csv'
 data = pd.read_csv(data_path)
-# 替换缺失值或异常值
-data['cholesterol'] = data['cholesterol'].replace(0, np.nan)
-cholesterol_median = data['cholesterol'].median()
-data['cholesterol'] = data['cholesterol'].fillna(cholesterol_median)
-
 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
+import statsmodels.api as sm
+import statsmodels.formula.api as smf
+
+# 拟合逻辑回归模型
+logit_model = smf.logit(formula='target ~ age + sex + chest_pain_type + resting_bp_s + cholesterol + fasting_blood_sugar + resting_ecg + max_heart_rate + exercise_angina + oldpeak + ST_slope', data=data)
+results = logit_model.fit()
+# Wald检验
+print(results.summary())
+
 # 初始化标签编码器
 le = LabelEncoder()
 
 # 展示相关性热力图
 import seaborn as sns
-df_dummies = pd.get_dummies(data) 
+df_dummies = pd.get_dummies(data, drop_first=True) 
 correlation_matrix = df_dummies.corr()
 plt.figure(figsize=(10, 8))
 sns.heatmap(correlation_matrix, annot=True, cmap='vlag', fmt=".1f")
@@ -35,7 +39,7 @@ plt.title('Heatmap of Correlation Matrix', weight='bold', size=6)
 plt.show()
 
 # 对分类变量进行标签编码
-categorical_features = ['sex', 'chest pain type', 'fasting blood sugar', 'resting ecg', 'exercise angina', 'ST slope']
+categorical_features = ['sex', 'chest_pain_type', 'fasting_blood_sugar', 'resting_ecg', 'exercise_angina', 'ST_slope']
 for col in categorical_features:
     data[col] = le.fit_transform(data[col])
 
@@ -74,7 +78,7 @@ p1 = model_1.predict(X_test_scaled)
 
 # 解释每个自变量在logistic回归模型中对因变量的影响，即相关系数
 # 假设特征名称存储在 feature_names 列表中
-feature_names = ['age','sex','chest pain type','resting bp s','cholesterol','fasting blood sugar','resting ecg','max heart rate','exercise angina','oldpeak','ST slope']  # 替换为实际的特征名称
+feature_names = ['age','sex','chest_pain_type','resting_bp_s','cholesterol','fasting_blood_sugar','resting_ecg','max_heart_rate','exercise_angina','oldpeak','ST_slope']  # 替换为实际的特征名称
 
 # 将系数与特征名称结合起来
 coefficients = model_1.coef_[0]  # 如果是二分类模型，model_1.coef_ 是一个二维数组，取第一个数组
@@ -207,23 +211,14 @@ plt.savefig('roc_curves_comparison.png', dpi=300, bbox_inches='tight')
 plt.show()
 
 # 5. 模型选择与变量选择变量选择
+
 # 固定随机种子
 np.random.seed(42)
-import statsmodels.api as sm
-
-# 拟合逻辑回归模型
-y_train = y_train.astype(int)
-logit_model = sm.Logit(y_train, X_train_scaled)
-result = logit_model.fit()
-
-# Wald检验
-print(result.summary())
 
 # 1. 数据预处理
 # 加载数据
 data_path = 'heart_statlog_cleveland_hungary_final.csv'
 data = pd.read_csv(data_path)
-
 # 删除sex列
 data = data.drop(data['sex'])
 
@@ -236,7 +231,7 @@ from sklearn.preprocessing import StandardScaler
 le = LabelEncoder()
 
 # 对分类变量进行标签编码
-categorical_features = ['chest pain type', 'fasting blood sugar', 'resting ecg', 'exercise angina', 'ST slope']
+categorical_features = ['chest_pain_type', 'fasting_blood_sugar', 'resting_ecg', 'exercise_angina', 'ST_slope']
 for col in categorical_features:
     data[col] = le.fit_transform(data[col])
 
@@ -275,7 +270,7 @@ p1 = model_1.predict(X_test_scaled)
 
 # 解释每个自变量在logistic回归模型中对因变量的影响，即相关系数
 # 假设特征名称存储在 feature_names 列表中
-feature_names = ['age','chest pain type','resting bp s','cholesterol','fasting blood sugar','resting ecg','max heart rate','exercise angina','oldpeak','ST slope']  # 替换为实际的特征名称
+feature_names = ['age','chest_pain_type','resting_bp_s','cholesterol','fasting_blood_sugar','resting_ecg','max_heart_rate','exercise_angina','oldpeak','ST_slope']  # 替换为实际的特征名称
 
 # 将系数与特征名称结合起来
 coefficients = model_1.coef_[0]  # 如果是二分类模型，model_1.coef_ 是一个二维数组，取第一个数组
