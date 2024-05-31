@@ -83,7 +83,9 @@ def biplot(score, coeff, labels=None):
         if labels is None:
             plt.text(x * 1.15, y * 1.15, "Var"+str(i+1), color='black', ha='center', va='center', fontsize=15)
         else:
-            plt.text(x * 1.15, y * 1.15, labels[i], color='black', ha='center', va='center', fontsize=15)
+            ha = 'left' if x > 0 else 'right'
+            va = 'bottom' if y > 0 else 'top'
+            plt.text(x * 1.15, y * 1.15, labels[i], color='black', ha=ha, va=va, fontsize=15)
     
     plt.xlabel("PC{}".format(1))
     plt.ylabel("PC{}".format(2))
