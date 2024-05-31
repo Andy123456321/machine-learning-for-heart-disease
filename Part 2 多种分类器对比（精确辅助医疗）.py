@@ -43,7 +43,7 @@ categorical_features = ['sex', 'chest_pain_type', 'fasting_blood_sugar', 'restin
 for col in categorical_features:
     data[col] = le.fit_transform(data[col])
 
-data = pd.get_dummies(data, columns=categorical_features)
+data = pd.get_dummies(data, columns=categorical_features, drop_first=True)
 data1 = data.copy()
 
 # 划分数据集
