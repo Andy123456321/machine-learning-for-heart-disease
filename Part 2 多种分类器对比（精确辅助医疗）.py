@@ -20,12 +20,6 @@ from sklearn.preprocessing import StandardScaler
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
 
-# 拟合逻辑回归模型
-logit_model = smf.logit(formula='target ~ age + sex + chest_pain_type + resting_bp_s + cholesterol + fasting_blood_sugar + resting_ecg + max_heart_rate + exercise_angina + oldpeak + ST_slope', data=data)
-results = logit_model.fit()
-# Wald检验
-print(results.summary())
-
 # 初始化标签编码器
 le = LabelEncoder()
 
@@ -44,7 +38,6 @@ for col in categorical_features:
     data[col] = le.fit_transform(data[col])
 
 data = pd.get_dummies(data, columns=categorical_features, drop_first=True)
-data1 = data.copy()
 
 # 划分数据集
 train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
@@ -62,9 +55,13 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(train_data)
 X_test_scaled = scaler.transform(test_data)
 
+logit_model_sm = sm.Logit(y_train, X_train_scaled)
+result_sm = logit_model_sm.fit()
+print(result_sm.summary())
+
 # 2. 逻辑回归
 from sklearn.linear_model import LogisticRegression
-model_1 = LogisticRegression()
+model_1 = LogisticRegression(penalty=None)
 model_1.fit(X_train_scaled, y_train)
 print(model_1.score(X_test_scaled, y_test))
 
@@ -77,8 +74,9 @@ p1 = model_1.predict(X_test_scaled)
 #print(classification_report(y_test, p1))
 
 # 解释每个自变量在logistic回归模型中对因变量的影响，即相关系数
-# 假设特征名称存储在 feature_names 列表中
-feature_names = ['age','sex','chest_pain_type','resting_bp_s','cholesterol','fasting_blood_sugar','resting_ecg','max_heart_rate','exercise_angina','oldpeak','ST_slope']  # 替换为实际的特征名称
+# 获取独热编码后的特征名称
+feature_names = list(train_data.columns)
+print(feature_names)
 
 # 将系数与特征名称结合起来
 coefficients = model_1.coef_[0]  # 如果是二分类模型，model_1.coef_ 是一个二维数组，取第一个数组
@@ -88,7 +86,11 @@ coef_dict = dict(zip(feature_names, coefficients))
 for feature, coef in coef_dict.items():
     print(f"{feature}: {coef:.4f}")
 
-
+# # 拟合逻辑回归模型
+# logit_model = smf.logit(formula='target ~ age + resting_bp_s + cholesterol + max_heart_rate + oldpeak+ sex_1 + chest_pain_type_1 + chest_pain_type_2 + chest_pain_type_3 + fasting_blood_sugar_1 + resting_ecg_1 + resting_ecg_2 + exercise_angina_1 + ST_slope_1 + ST_slope_2 + ST_slope_3', data=data)
+# results = logit_model.fit()
+# # Wald检验
+# print(results.summary())
 
 # 混淆矩阵
 from sklearn.metrics import confusion_matrix
