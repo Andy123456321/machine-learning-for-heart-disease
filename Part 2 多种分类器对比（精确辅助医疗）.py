@@ -209,11 +209,21 @@ plt.show()
 # 5. 模型选择与变量选择变量选择
 # 固定随机种子
 np.random.seed(42)
+import statsmodels.api as sm
+
+# 拟合逻辑回归模型
+y_train = y_train.astype(int)
+logit_model = sm.Logit(y_train, X_train_scaled)
+result = logit_model.fit()
+
+# Wald检验
+print(result.summary())
 
 # 1. 数据预处理
 # 加载数据
 data_path = 'heart_statlog_cleveland_hungary_final.csv'
 data = pd.read_csv(data_path)
+
 # 删除sex列
 data = data.drop(data['sex'])
 
