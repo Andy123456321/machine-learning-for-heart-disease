@@ -5,7 +5,7 @@ import pandas as pd
 # 加载数据
 data_path = 'heart_statlog_cleveland_hungary_final.csv'
 data = pd.read_csv(data_path)
-# 替换缺失值或异常值
+# 中位数替换缺失值或异常值
 data['cholesterol'] = data['cholesterol'].replace(0, np.nan)
 cholesterol_median = data['cholesterol'].median()
 data['cholesterol'] = data['cholesterol'].fillna(cholesterol_median)
@@ -99,7 +99,9 @@ biplot(X_train_pca, pca.components_, labels=features)
 # 3. 逻辑回归
 from sklearn.linear_model import LogisticRegression
 model_1 = LogisticRegression()
+#使用PCA后的训练数据训练回归模型
 model_1.fit(X_train_pca, y_train)
+#评估模型，返回模型在测试集上的平均准确度（比例）
 print(model_1.score(X_test_pca, y_test))
 
 # 4. 绘制决策边界
@@ -109,11 +111,13 @@ import numpy as np
 def plot_decision_boundary(X, y, model):
     x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1
     y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+    #meshgrid函数生成网格点矩阵，用于绘制决策边界。网格点之间的步长为0.01
     xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.01),
                          np.arange(y_min, y_max, 0.01))
     grid = np.c_[xx.ravel(), yy.ravel()]
     preds = model.predict(grid).reshape(xx.shape)
-    
+
+    #使用contourf函数填充决策边界区域，使用contour函数绘制决策边界线
     plt.figure(figsize=(8, 6))
     plt.contourf(xx, yy, preds, alpha=0.3, levels=[0, 0.5, 1], cmap='RdBu')
     plt.contour(xx, yy, preds, levels=[0.5], colors='purple')
