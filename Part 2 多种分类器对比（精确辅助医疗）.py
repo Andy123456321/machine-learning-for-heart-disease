@@ -30,7 +30,7 @@ correlation_matrix = df_dummies.corr()
 plt.figure(figsize=(10, 8))
 sns.heatmap(correlation_matrix, annot=True, cmap='vlag', fmt=".1f")
 plt.title('Heatmap of Correlation Matrix', weight='bold', size=6)
-plt.show()
+plt.show()     
 
 # 对分类变量进行标签编码
 categorical_features = ['sex', 'chest_pain_type', 'fasting_blood_sugar', 'resting_ecg', 'exercise_angina', 'ST_slope']
@@ -61,7 +61,7 @@ print(result_sm.summary())
 
 # 2. 逻辑回归
 from sklearn.linear_model import LogisticRegression
-model_1 = LogisticRegression(penalty=None)
+model_1 = LogisticRegression(C=1e10)
 model_1.fit(X_train_scaled, y_train)
 print(model_1.score(X_test_scaled, y_test))
 
@@ -221,8 +221,11 @@ np.random.seed(42)
 # 加载数据
 data_path = 'heart_statlog_cleveland_hungary_final.csv'
 data = pd.read_csv(data_path)
-# 删除sex列
-data = data.drop(data['sex'])
+# 删除列
+data = data.drop(columns=['resting_ecg'])
+data = data.drop(columns=['ST_slope'])
+data = data.drop(columns=['resting_bp_s'])
+
 
 from sklearn.preprocessing import LabelEncoder
 from sklearn.decomposition import PCA
@@ -233,11 +236,11 @@ from sklearn.preprocessing import StandardScaler
 le = LabelEncoder()
 
 # 对分类变量进行标签编码
-categorical_features = ['chest_pain_type', 'fasting_blood_sugar', 'resting_ecg', 'exercise_angina', 'ST_slope']
+categorical_features = ['chest_pain_type', 'fasting_blood_sugar', 'exercise_angina']
 for col in categorical_features:
     data[col] = le.fit_transform(data[col])
 
-data = pd.get_dummies(data, columns=categorical_features)
+data = pd.get_dummies(data, columns=categorical_features, drop_first=True)
 
 # 划分数据集
 train_data, test_data = train_test_split(data, test_size=0.2, random_state=42)
@@ -258,7 +261,7 @@ X_test_scaled = scaler.transform(test_data)
 # 重新计算模型
 # 5.1. 逻辑回归
 from sklearn.linear_model import LogisticRegression
-model_1 = LogisticRegression()
+model_1 = LogisticRegression(C=1e10)
 model_1.fit(X_train_scaled, y_train)
 print(model_1.score(X_test_scaled, y_test))
 
@@ -272,7 +275,7 @@ p1 = model_1.predict(X_test_scaled)
 
 # 解释每个自变量在logistic回归模型中对因变量的影响，即相关系数
 # 假设特征名称存储在 feature_names 列表中
-feature_names = ['age','chest_pain_type','resting_bp_s','cholesterol','fasting_blood_sugar','resting_ecg','max_heart_rate','exercise_angina','oldpeak','ST_slope']  # 替换为实际的特征名称
+feature_names = list(train_data.columns)
 
 # 将系数与特征名称结合起来
 coefficients = model_1.coef_[0]  # 如果是二分类模型，model_1.coef_ 是一个二维数组，取第一个数组
@@ -283,7 +286,9 @@ for feature, coef in coef_dict.items():
     print(f"{feature}: {coef:.4f}")
 
 
-
+logit_model_sm = sm.Logit(y_train, X_train_scaled)
+result_sm = logit_model_sm.fit()
+print(result_sm.summary())
 # 混淆矩阵
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import roc_auc_score
